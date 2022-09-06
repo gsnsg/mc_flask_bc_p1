@@ -1,6 +1,7 @@
 from unicodedata import category
+import sys
 from flask import Flask, request
-from helpers.io_helper import form_response, console_print, bad_response_message
+from helpers.io_helper import console_print, form_response, bad_response_message
 from helpers.img_helper import save_image_to_system
 
 import os
@@ -42,7 +43,7 @@ def save_image():
     imagePath = os.path.join(app.config["UPLOAD_FOLDER"] + "/{}/{}".format(uid, category), fileName)
 
     save_image_to_system(imagePath, img)
-    
+
     return form_response(200, "Image Saved!")
     
 @app.route("/all_paths")
@@ -55,4 +56,4 @@ def list_all_paths():
     ]
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug = True)
