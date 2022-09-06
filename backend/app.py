@@ -13,7 +13,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.route("/")
 def root_path():
-    return "Welcome to Image Saver API! \nHit `/all_paths` to get the all supported endpoints"
+    return "Welcome to Image Saver API! \n Hit `/all_paths` to get the all supported endpoints"
 
 @app.route("/v1/save_img", methods = ["POST"])
 def save_image():
@@ -21,7 +21,9 @@ def save_image():
         return form_response(400, bad_response_message("UID Not Found"))
     
     content_type = request.headers.get("Content-Type")
-    if content_type != "application/json":
+
+    print(request.json, file=sys.stderr)
+    if content_type.find("application/json") == -1:
         return abort(400, "Content-Type not supported!")
 
     # Get request body in form of JSON
