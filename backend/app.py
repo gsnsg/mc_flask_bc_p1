@@ -1,6 +1,6 @@
 from unicodedata import category
 import sys
-from flask import Flask, request
+from flask import Flask, request, abort, make_response, jsonify
 from helpers.io_helper import console_print, form_response, bad_response_message
 from helpers.img_helper import save_image_to_system
 
@@ -22,18 +22,18 @@ def save_image():
     
     content_type = request.headers.get("Content-Type")
     if content_type != "application/json":
-        return form_response(400, bad_response_message("Content-Type not supported!"))
+        return abort(400, "Content-Type not supported!")
 
     # Get request body in form of JSON
     jsonData = request.json
     if "img" not in jsonData or len(jsonData["img"]) == 0:
-        return form_response(400, bad_response_message("Image not found!"))
+        return abort(400, "Image not found!")
 
     if "category" not in jsonData or len(jsonData["category"]) == 0:
-        return form_response(400, bad_response_message("Image Category not found!"))
+        return abort(400, "Image Category not found!")
 
     if "file_name" not in jsonData or len(jsonData["file_name"]) == 0:
-        return form_response(400, bad_response_message("Image File Name not found!"))
+        return abort(400, "Image File Name not found!")
     
     uid = request.headers.get("uid")
     img = jsonData["img"]
@@ -44,7 +44,8 @@ def save_image():
 
     save_image_to_system(imagePath, img)
 
-    return form_response(200, "Image Saved!")
+    response = form_response(200, "Image Saved!")
+    return make_response(jsonify(response), 200)
     
 @app.route("/all_paths")
 def list_all_paths():
