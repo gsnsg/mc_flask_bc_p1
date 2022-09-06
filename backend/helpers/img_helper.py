@@ -1,10 +1,16 @@
-import base64
+from PIL import Image
+from io import BytesIO
+import re, time, base64
 import os
 
-def save_image_to_system(imgPath, imgString):
-    imgData = base64.b64decode(imgString)
-    # Create a directory if its not present already
+# credits: https://github.com/python-pillow/Pillow/issues/3400
+def save_image_to_system(imgPath, codec):
+    base64_data = re.sub('^data:image/.+;base64,', '', codec)
+    byte_data = base64.b64decode(base64_data)
+    image_data = BytesIO(byte_data)
+    img = Image.open(image_data)
+    t = time.time()
+    # make directory if it doesn't exist
     os.makedirs(os.path.dirname(imgPath), exist_ok=True)
-    with open(imgPath, "wb") as img_file:
-        img_file.write(imgData)
+    img.save(imgPath, "PNG")
 

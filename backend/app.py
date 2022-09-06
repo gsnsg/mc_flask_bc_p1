@@ -1,7 +1,7 @@
 from unicodedata import category
 import sys
 from flask import Flask, request, abort, make_response, jsonify
-from helpers.io_helper import console_print, form_response, bad_response_message
+from helpers.io_helper import form_response, bad_response_message
 from helpers.img_helper import save_image_to_system
 
 import os
@@ -22,7 +22,6 @@ def save_image():
     
     content_type = request.headers.get("Content-Type")
 
-    print(request.json, file=sys.stderr)
     if content_type.find("application/json") == -1:
         return abort(400, "Content-Type not supported!")
 
