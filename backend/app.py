@@ -1,5 +1,5 @@
 from unicodedata import category
-import sys
+
 from flask import Flask, request, abort, make_response, jsonify
 from helpers.io_helper import form_response, bad_response_message
 from helpers.img_helper import save_image_to_system

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Image Uploader</string>
+    <string name="click_to_take_photo"> Click to take a Photo!</string>
+    <string name="want_to_take_photo"> Do you want to take a picture ? </string>
+    <string name="take_picture_response">Yes, Let\'s do it!</string>
+    <string name="upload_to_cloud">"Upload image to cloud!"</string>
+    <string name="retake_image">"Re-take Image"</string>
+    <string name="selected_image">Selected Image</string>
+    <string name="select_category"> Select category of the image </string>
+    <string name="select_category_description"> Select the category of the image: </string>
+    <string name="text_view">Text Name</string>
+</resources>
