@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -28,10 +29,18 @@ public class MainActivity extends AppCompatActivity {
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
+    int SELECT_PICTURE = 200;
+
     private ImageView previewImageView;
 
     private void startCamera() {
         Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            openCameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 0);
+            openCameraIntent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+        } else {
+            openCameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+        }
         startActivityForResult(openCameraIntent, 101);
     }
 
@@ -53,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i("Image Helper", "Printing here");
+        Log.i("Here", String.valueOf(requestCode));
+        Log.i("Here", String.valueOf(resultCode));
 
         if(requestCode == 101 && resultCode == Activity.RESULT_OK) {
             Bitmap clickedImageBitmap =  (Bitmap) data.getExtras().get("data");
@@ -68,6 +79,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
 }

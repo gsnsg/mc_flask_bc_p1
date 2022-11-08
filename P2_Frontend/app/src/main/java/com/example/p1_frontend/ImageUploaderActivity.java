@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -101,7 +102,10 @@ public class ImageUploaderActivity extends AppCompatActivity {
 
     private void makePostRequest() {
         MediaType MEDIA_TYPE = MediaType.parse("application/json");
+        // Use this url for emulator debugging
         String url = "http://10.0.2.2:5000/v1/classify";
+        // Use this url for physical device debugging
+//        String url = "http://localhost:5000/v1/classify";
         String fileName = Instant.now().getEpochSecond() + ".png";
         JSONObject postData = new JSONObject();
 
