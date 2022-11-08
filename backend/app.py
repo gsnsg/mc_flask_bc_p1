@@ -58,7 +58,7 @@ def predict(img):
 def root():
     return make_response(jsonify({"status" : "up"}), 200)
 
-@app.route("/v1/classify", methods = ["GET"])
+@app.route("/v1/classify", methods = ["POST", "GET"])
 def save_image():
     content_type = request.headers.get("Content-Type")
 
@@ -81,7 +81,7 @@ def save_image():
         np_img = process_img(rgb_img)
         res = predict(np_img)
         save_image_to_system(UPLOAD_FOLDER + "/" + str(res) + "/" + fileName, img)
-        return make_response(jsonify({"predicted_value" : res}), 200)
+        return make_response(jsonify({"value" : res}))
 
     except Exception:
         abort(400, "Not able to process image")

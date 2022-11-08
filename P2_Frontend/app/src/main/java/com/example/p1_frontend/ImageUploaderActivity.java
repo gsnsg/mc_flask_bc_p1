@@ -15,10 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,22 +42,14 @@ public class ImageUploaderActivity extends AppCompatActivity {
     private ImageView displayImage;
 
     private Bitmap selectedImageBitMap;
-    private String selectedCategory = "";
 
-    private static final String[] categories = {"Places", "Objects", "Food", "Anime", "Misc"};
+    private Boolean ongoingRequest = false;
 
     private void startCamera() {
+        TextView txtView = (TextView) findViewById(R.id.prediction_label);
+        txtView.setText("");
         Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(openCameraIntent, 101);
-    }
-
-    private void setupSpinner() {
-        AutoCompleteTextView spinner = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
-        // Setup spinner data
-        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, R.layout.drop_down_item, categories);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(categoryAdapter);
-        spinner.setOnItemClickListener((parent, view, position, id) -> selectedCategory = categoryAdapter.getItem(position));
     }
 
     private void setupImageView() {
@@ -70,6 +64,7 @@ public class ImageUploaderActivity extends AppCompatActivity {
     }
 
     private void setupRetakeButton() {
+
         Button retakeButton = (Button) findViewById(R.id.retake_button);
         retakeButton.setOnClickListener(v -> startCamera());
     }
@@ -79,12 +74,10 @@ public class ImageUploaderActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectedCategory.length() == 0) {
-                    showToast("Please select a Category before uploading");
-                } else {
+                if(!ongoingRequest)
+                    ongoingRequest = true;
                     makePostRequest();
                 }
-            }
         });
     }
 
@@ -94,7 +87,6 @@ public class ImageUploaderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image_uploader);
 
         setupImageView();
-        setupSpinner();
         setupRetakeButton();
         setupUploadButton();
     }
@@ -109,14 +101,13 @@ public class ImageUploaderActivity extends AppCompatActivity {
 
     private void makePostRequest() {
         MediaType MEDIA_TYPE = MediaType.parse("application/json");
-        String url = "http://10.0.2.2:5000/v1/save_img";
+        String url = "http://10.0.2.2:5000/v1/classify";
         String fileName = Instant.now().getEpochSecond() + ".png";
         JSONObject postData = new JSONObject();
 
         try {
             postData.put("img", getImageEncoding());
             postData.put("file_name", fileName);
-            postData.put("category", selectedCategory);
         } catch(JSONException e){
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -147,17 +138,28 @@ public class ImageUploaderActivity extends AppCompatActivity {
                 if (response.code() != 200) {
                     Log.v("Error code: ", String.valueOf(response.code()));
                 } else {
-                    Thread thread = new Thread(() -> {
-                        try {
-                            Thread.sleep(Toast.LENGTH_LONG); // As I am using LENGTH_LONG in Toast
-                            ImageUploaderActivity.this.finish();
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            try {
+                                TextView txtView = (TextView) findViewById(R.id.prediction_label);
+                                String jsonData = response.body().string();
+                                JSONObject Jobject = new JSONObject(jsonData);
+                                int predictedValue = Jobject.getInt("value");
+                                txtView.setText("Predicted Value: " + String.valueOf(predictedValue));
+                                showToast("Image Classified Successfully!");
+                            } catch (Exception e) {
+                                showToast(e.toString());
+                            }
                         }
                     });
-                    showToast("Image Uploaded Successfully!");
-                    thread.start();
+
                 }
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        ongoingRequest = false;
+                    }
+                });
+
             }
         });
     }

@@ -18,23 +18,15 @@
         android:scaleType="fitCenter"
         tools:ignore="RedundantDescriptionCheck" />
 
-    <com.google.android.material.textfield.TextInputLayout
-    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="20dp"
-        android:hint="@string/select_category">
-
-        <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:inputType="none"
-            android:textAppearance="?android:attr/textAppearanceMediumInverse"
-            android:textColor="@color/black" />
-
-</com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:id="@+id/prediction_label"
+        android:layout_width="match_parent"
+        android:layout_height="40sp"
+        android:layout_margin="20sp"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        />
 
         <Button
             android:id="@+id/retake_button"
@@ -42,11 +34,11 @@
             android:layout_height="wrap_content"
             android:text="@string/retake_image" />
 
-        <Button
-            android:id="@+id/upload_img_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/upload_to_cloud" />
+    <Button
+        android:id="@+id/upload_img_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/classify_image" />
 
 
 </LinearLayout>
