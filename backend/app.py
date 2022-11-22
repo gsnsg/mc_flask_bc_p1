@@ -11,8 +11,9 @@ import numpy as np
 from keras.layers import Resizing
 
 import re
-from PIL import Image
+from PIL import Image, ImageOps
 import base64
+import numpy as np
 from io import BytesIO
 
 # loading model from disk
@@ -43,15 +44,18 @@ def get_img(codec):
     return Image.open(image_data)
     
 def process_img(rgb_img):
-    np_img = rgb_img.convert('L')
-    np_img = np.expand_dims(np.array(np_img), axis = -1)
-    np_img = RESIZING_LAYER(np_img).numpy()
-    tf.keras.utils.save_img(UPLOAD_FOLDER + "/sample.png", np_img)
+    img = rgb_img.resize((28, 28))
+    img = img.convert('L')
+    img = ImageOps.invert(img)
+    img = np.array(img)
+    img_bw = (img > 150) * img
+    img_bw = img_bw.reshape(1,28,28,1)
+    np_img = img_bw/255.0
+    tf.keras.utils.save_img(UPLOAD_FOLDER + "/sample.png", np_img[0])
     return np_img
 
 def predict(img):
-    imgs = np.expand_dims(img, axis=0)
-    preds = loaded_model.predict(imgs)
+    preds = loaded_model.predict(img)
     return int(np.argmax(preds))
 
 @app.route("/", methods = ["GET"])
